@@ -43,9 +43,6 @@ public class Team {
 	
 	
 	//Getters & Setters
-	public void addSeason(TeamSeason s){
-		seasons.add(s);
-	}
 	
 	public TeamSeason getTeamSeason(Integer year) {
 		for (TeamSeason ts : seasons) {
@@ -53,5 +50,67 @@ public class Team {
 				return ts;
 		}
 		return null;
+	}
+	
+	public void addSeason(TeamSeason s){
+		seasons.add(s);
+	}
+	
+	public Integer getID(){
+		return teamId;
+	}
+	
+	public void setID(Integer id){
+		teamId = id;
+	}
+	
+	public String getName(){
+		return this.name;
+	}
+	
+	public void setName(String n){
+		name = n;
+	}
+	
+	public String getLeague(){
+		return league;
+	}
+	
+	public void setLeague(String l){
+		league = l;
+	}
+	
+	public Integer getYearFounded(){
+		return teamId;
+	}
+	
+	public void setYearFounded(Integer year){
+		yearFounded = year;
+	}
+	
+	public Integer getYearLast(){
+		return yearLast;
+	}
+	
+	public void setYearLast(Integer year){
+		yearLast = year;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof Team)){
+			return false;
+		}
+		Team other = (Team) obj;
+		return (this.getName().equalsIgnoreCase(other.getName()) &&
+				this.getLeague().equalsIgnoreCase(other.getLeague()));
+	}
+
+	@Override
+	public int hashCode() {
+		Integer hash = 0;
+		if (this.getName()!=null) hash += this.getName().hashCode(); 
+		if (this.getLeague()!=null) hash += this.getLeague().hashCode();
+		return hash;
 	}
 }
