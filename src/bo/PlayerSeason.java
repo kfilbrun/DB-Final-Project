@@ -172,7 +172,5 @@ public class PlayerSeason implements Serializable {
 			Integer year2 = ps2.getYear();
 			return year1.compareTo(year2);
 		}
-
 	};
-	
 }
