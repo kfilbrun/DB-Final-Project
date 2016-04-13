@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import bo.FieldingStats;
 import bo.PitchingStats;
 import bo.Player;
 import bo.PlayerSeason;
+import bo.Team;
 import dataaccesslayer.HibernateUtil;
 
 public class Convert {
@@ -27,6 +29,7 @@ public class Convert {
 			long startTime = System.currentTimeMillis();
 			conn = DriverManager.getConnection(MYSQL_CONN_URL);
 			convertPlayers();
+			convertTeams();
 			long endTime = System.currentTimeMillis();
 			long elapsed = (endTime - startTime) / (1000*60);
 			System.out.println("Elapsed time in mins: " + elapsed);
@@ -41,7 +44,38 @@ public class Convert {
 		}
 		HibernateUtil.getSessionFactory().close();
 	}
-		
+
+	public static void convertTeams(){
+		try {
+			PreparedStatement ps = conn.prepareStatement("select lgID, teamID, yearID, W, L, Rank, G, attendance");
+			
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()){
+				String teamId = rs.getString("teamID");
+				String teamName = getLatestTeamName(teamId);
+				String league = rs.getString("lgID");
+				Integer season = rs.getInt("yearID");
+				Integer wins = rs.getInt("W");
+				Integer losses = rs.getInt("L");
+				Integer rank = rs.getInt("Rank");
+				Integer gamesPlayed = rs.getInt("G");
+				Integer attendance = rs.getInt("attendance");
+				
+				Integer firstYear = getFirstYear(teamId);
+				Integer lastYear = getLastYear(teamId);
+				
+				Team t = new Team();
+				
+				t.setYearFounded(firstYear);
+				t.setYearLast(lastYear);
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void convertPlayers() {
 		try {
 			PreparedStatement ps = conn.prepareStatement("select " + 
@@ -220,7 +254,7 @@ public class Convert {
 					"sum(H) as hits, " + 
 					"sum(2B) as doubles, " + 
 					"sum(3B) as triples, " + 
-					"sum(HR) as homeRuns, " + 
+					"sum(HR) as homeRuns, " + columnIndex
 					"sum(RBI) as runsBattedIn, " + 
 					"sum(SO) as strikeouts, " + 
 					"sum(BB) as walks, " + 
