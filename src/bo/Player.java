@@ -59,7 +59,8 @@ public class Player {
 	// utility function
 	public PlayerSeason getPlayerSeason(Integer year) {
 		for (PlayerSeason ps : seasons) {
-			if (ps.getYear().equals(year)) return ps;
+			if (ps.getYear().equals(year))
+				return ps;
 		}
 		return null;
 	}
