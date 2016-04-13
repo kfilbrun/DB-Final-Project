@@ -20,7 +20,7 @@ import dataaccesslayer.HibernateUtil;
 public class Convert {
 
 	static Connection conn;
-	static final String MYSQL_CONN_URL = "jdbc:mysql://192.168.6.131:3306/mlb?user=seth&password=password"; 
+	static final String MYSQL_CONN_URL = "jdbc:mysql://192.168.65.131:3306/mlb?user=seth&password=password"; 
 
 	public static void main(String[] args) {
 		try {
