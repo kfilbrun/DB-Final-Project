@@ -43,7 +43,6 @@ public class Team {
 	
 	
 	//Getters & Setters
-	
 	public TeamSeason getTeamSeason(Integer year) {
 		for (TeamSeason ts : seasons) {
 			if (ts.getYear().equals(year))
@@ -65,7 +64,7 @@ public class Team {
 	}
 	
 	public String getName(){
-		return this.name;
+		return name;
 	}
 	
 	public void setName(String n){
