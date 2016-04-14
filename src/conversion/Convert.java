@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -15,18 +16,21 @@ import bo.FieldingStats;
 import bo.PitchingStats;
 import bo.Player;
 import bo.PlayerSeason;
+import bo.Team;
+import bo.TeamSeason;
 import dataaccesslayer.HibernateUtil;
 
 public class Convert {
 
 	static Connection conn;
-	static final String MYSQL_CONN_URL = "jdbc:mysql://192.168.6.131:3306/mlb?user=seth&password=password"; 
+	static final String MYSQL_CONN_URL = "jdbc:mysql://192.168.65.131:3306/mlb?user=seth&password=password"; 
 
 	public static void main(String[] args) {
 		try {
 			long startTime = System.currentTimeMillis();
 			conn = DriverManager.getConnection(MYSQL_CONN_URL);
 			convertPlayers();
+			convertTeams();
 			long endTime = System.currentTimeMillis();
 			long elapsed = (endTime - startTime) / (1000*60);
 			System.out.println("Elapsed time in mins: " + elapsed);
@@ -41,7 +45,98 @@ public class Convert {
 		}
 		HibernateUtil.getSessionFactory().close();
 	}
-		
+
+	public static void convertTeams(){
+		try {
+			PreparedStatement ps = conn.prepareStatement("call getTeams()");
+			
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()){
+				String teamId = rs.getString("teamID");
+				String teamName = rs.getString("name");
+				String league = rs.getString("lgID");
+				
+				Integer firstYear = getFirstYear(teamId, league);
+				Integer lastYear = getLastYear(teamId, league);
+				
+				Team t = new Team();
+				
+				t.setYearFounded(firstYear);
+				t.setYearLast(lastYear);
+				t.setLeague(league);
+				t.setName(teamName);
+				
+				addTeamSeasons(t, teamId, league);
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static Integer getFirstYear(String teamID, String league){
+		PreparedStatement ps;
+		try {
+			ps = conn.prepareStatement("SELECT yearID FROM Teams WHERE teamID = '" + teamID + "' AND lgID = '" + league + "' ORDER BY yearID ASC LIMIT 0, 1");
+			
+			ResultSet rs = ps.executeQuery();
+			
+			rs.next();
+			return rs.getInt("yearID");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private static Integer getLastYear(String teamID, String league){
+		PreparedStatement ps;
+		try {
+			ps = conn.prepareStatement("SELECT yearID FROM Teams WHERE teamID = '" + teamID + "' AND lgID = '" + league + "' ORDER BY yearID DESC LIMIT 0, 1");
+			
+			ResultSet rs = ps.executeQuery();
+			
+			rs.next();
+			return rs.getInt("yearID");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private static void addTeamSeasons(Team t, String teamId, String league){
+		try{
+			PreparedStatement ps = conn.prepareStatement("select yearID, W, L, Rank, G, attendance " +
+														"FROM Teams " +
+														"WHERE teamID = '" + teamId + "' AND lgID = '" + league + "';");
+			
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()){
+				Integer season = rs.getInt("yearID");
+				Integer wins = rs.getInt("W");
+				Integer losses = rs.getInt("L");
+				Integer rank = rs.getInt("Rank");
+				Integer gamesPlayed = rs.getInt("G");
+				Integer attendance = rs.getInt("attendance");
+				
+				TeamSeason ts = new TeamSeason();
+				
+				ts.setGamesPlayed(gamesPlayed);
+				ts.setWins(wins);
+				ts.setLosses(losses);
+				ts.setRank(rank);
+				ts.setYear(season);
+				ts.setTotalAttendance(attendance);
+				
+				t.addSeason(ts);
+			}
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
 	public static void convertPlayers() {
 		try {
 			PreparedStatement ps = conn.prepareStatement("select " + 
@@ -220,7 +315,7 @@ public class Convert {
 					"sum(H) as hits, " + 
 					"sum(2B) as doubles, " + 
 					"sum(3B) as triples, " + 
-					"sum(HR) as homeRuns, " + 
+					"sum(HR) as homeRuns, " +
 					"sum(RBI) as runsBattedIn, " + 
 					"sum(SO) as strikeouts, " + 
 					"sum(BB) as walks, " + 
