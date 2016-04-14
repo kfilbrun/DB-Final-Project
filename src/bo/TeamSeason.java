@@ -2,13 +2,18 @@ package bo;
 
 import java.io.Serializable;
 import java.util.Comparator;
-
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 
 @SuppressWarnings("serial")
 @Entity(name = "teamseason")
@@ -45,6 +50,24 @@ public class TeamSeason implements Serializable {
 		}
 	}
 
+	private Set<Player> players = new HashSet<Player>(0);
+	
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinTable(name = "teamseasonplayer", joinColumns = {
+		@JoinColumn(name = "teamid", referencedColumnName = "teamid", insertable = false, updatable = false),
+		@JoinColumn(name = "year", referencedColumnName = "year", insertable = false, updatable = false) },
+		inverseJoinColumns = {
+		@JoinColumn(name = "playerid", referencedColumnName = "teamid", insertable = false, updatable = false),
+	})
+	
+	public Set<Player> getPlayers(){
+		return players;
+	}
+	
+	public void setPlayers(Set<Player> ps){
+		this.players = ps;
+	}
+	
 	@Column
 	int gamesPlayed;
 	@Column
@@ -64,6 +87,14 @@ public class TeamSeason implements Serializable {
 		tsi.team = t;
 		tsi.teamYear = year;
 		this.id = tsi;
+	}
+	
+	public TeamSeason(Team t, Integer year, Set<Player> ps) {
+		TeamSeasonId tsi = new TeamSeasonId();
+		tsi.team = t;
+		tsi.teamYear = year;
+		this.id = tsi;
+		this.players = ps;
 	}
 
 	//Getters and setters

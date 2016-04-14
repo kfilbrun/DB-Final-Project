@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Fetch;
@@ -34,6 +35,17 @@ public class Player {
 	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="id.player")
 	@Fetch(FetchMode.JOIN)
 	Set<PlayerSeason> seasons = new HashSet<PlayerSeason>();
+	
+	Set<TeamSeason> teamseasons = new HashSet<TeamSeason>(0);
+	
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "players")
+	public Set<TeamSeason> getTeamSeasons() {
+		return this.teamseasons;
+	}
+	
+	public void setTeamSeasons(Set<TeamSeason> ts){
+		teamseasons = ts;
+	}
 	
 	@Column
 	String name;
