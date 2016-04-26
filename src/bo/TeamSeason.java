@@ -49,16 +49,15 @@ public class TeamSeason implements Serializable {
 			return hash;
 		}
 	}
-
-	private Set<Player> players = new HashSet<Player>(0);
 	
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "teamseasonplayer", joinColumns = {
-		@JoinColumn(name = "teamid", referencedColumnName = "teamid", insertable = false, updatable = false),
+		@JoinColumn(name = "teamId", referencedColumnName = "teamId", insertable = false, updatable = false),
 		@JoinColumn(name = "year", referencedColumnName = "year", insertable = false, updatable = false) },
 		inverseJoinColumns = {
-		@JoinColumn(name = "playerid", referencedColumnName = "teamid", insertable = false, updatable = false),
+		@JoinColumn(name = "playerId", referencedColumnName = "playerId", insertable = false, updatable = false),
 	})
+	private Set<Player> players = new HashSet<Player>(0);
 	
 	public Set<Player> getPlayers(){
 		return players;
@@ -69,18 +68,20 @@ public class TeamSeason implements Serializable {
 	}
 	
 	@Column
-	int gamesPlayed;
+	Integer gamesPlayed;
 	@Column
-	int wins;
+	Integer wins;
 	@Column
-	int losses;
+	Integer losses;
 	@Column
-	int rank;
+	Integer rank;
 	@Column
-	int totalAttendance;
+	Integer totalAttendance;
 	
 	// Hibernate needs a default constructor
-	public TeamSeason() {}
+	public TeamSeason() {
+		id = new TeamSeasonId();
+	}
 	
 	public TeamSeason(Team t, Integer year) {
 		TeamSeasonId tsi = new TeamSeasonId();
@@ -106,7 +107,11 @@ public class TeamSeason implements Serializable {
 		return id.teamYear;
 	}
 	
-	public void setYear(int y){
+	public void addPlayer(Player p){
+		players.add(p);
+	}
+	
+	public void setYear(Integer y){
 		id.teamYear = y;
 	}
 	
@@ -122,7 +127,7 @@ public class TeamSeason implements Serializable {
 		return gamesPlayed;
 	}
 	
-	public void setGamesPlayed(int games){
+	public void setGamesPlayed(Integer games){
 		gamesPlayed = games;
 	}
 	
@@ -130,7 +135,7 @@ public class TeamSeason implements Serializable {
 		return wins;
 	}
 	
-	public void setWins(int w){
+	public void setWins(Integer w){
 		wins = w;
 	}
 	
@@ -138,7 +143,7 @@ public class TeamSeason implements Serializable {
 		return losses;
 	}
 	
-	public void setLosses(int l){
+	public void setLosses(Integer l){
 		losses = l;
 	}
 
@@ -146,7 +151,7 @@ public class TeamSeason implements Serializable {
 		return rank;
 	}
 	
-	public void setRank(int r){
+	public void setRank(Integer r){
 		rank = r;
 	}
 	
@@ -154,7 +159,7 @@ public class TeamSeason implements Serializable {
 		return totalAttendance;
 	}
 	
-	public void setTotalAttendance(int tA){
+	public void setTotalAttendance(Integer tA){
 		totalAttendance = tA;
 	}
 	

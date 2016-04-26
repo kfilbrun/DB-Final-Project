@@ -4,10 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import bo.BattingStats;
@@ -23,7 +24,8 @@ import dataaccesslayer.HibernateUtil;
 public class Convert {
 
 	static Connection conn;
-	static final String MYSQL_CONN_URL = "jdbc:mysql://192.168.65.131:3306/mlb?user=seth&password=password"; 
+	static final String MYSQL_CONN_URL = "jdbc:mysql://192.168.65.131:3306/mlb?user=java&password=password"; 
+	static Map<String, Player> playermap = new HashMap<String, Player>();
 
 	public static void main(String[] args) {
 		try {
@@ -69,6 +71,7 @@ public class Convert {
 				
 				addTeamSeasons(t, teamId, league);
 				
+				HibernateUtil.persistTeam(t);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -123,6 +126,7 @@ public class Convert {
 				
 				TeamSeason ts = new TeamSeason();
 				
+				ts.setTeam(t);
 				ts.setGamesPlayed(gamesPlayed);
 				ts.setWins(wins);
 				ts.setLosses(losses);
@@ -130,9 +134,28 @@ public class Convert {
 				ts.setYear(season);
 				ts.setTotalAttendance(attendance);
 				
+				addPlayers(ts, season, teamId, league);
+				
 				t.addSeason(ts);
 			}
 		} catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	public static void addPlayers(TeamSeason ts, Integer season, String teamId, String league){
+		try {
+			PreparedStatement ps = conn.prepareStatement("select playerID " +
+					"FROM Appearances " +
+					"WHERE teamID = '" + teamId + "' AND lgID = '" + league + 
+					"' AND yearID = " + season + ";");
+
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()){
+				ts.addPlayer(playermap.get(rs.getString("playerID")));
+			}
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -199,6 +222,7 @@ public class Convert {
 				addSeasons(p, pid);
 				// we can now persist player, and the seasons and stats will cascade
 				HibernateUtil.persistPlayer(p);
+				playermap.put(pid, p);
 			}
 			rs.close();
 			ps.close();

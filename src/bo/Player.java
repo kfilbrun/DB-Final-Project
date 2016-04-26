@@ -36,9 +36,9 @@ public class Player {
 	@Fetch(FetchMode.JOIN)
 	Set<PlayerSeason> seasons = new HashSet<PlayerSeason>();
 	
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "players")
 	Set<TeamSeason> teamseasons = new HashSet<TeamSeason>(0);
 	
-	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "players")
 	public Set<TeamSeason> getTeamSeasons() {
 		return this.teamseasons;
 	}
