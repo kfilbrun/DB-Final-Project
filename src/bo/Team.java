@@ -49,6 +49,10 @@ public class Team {
 		seasons.add(s);
 	}
 	
+	public Set<TeamSeason> getSeasons(){
+		return seasons;
+	}
+	
 	public Integer getID(){
 		return teamId;
 	}
