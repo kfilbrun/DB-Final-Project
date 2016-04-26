@@ -162,6 +162,29 @@ public class HibernateUtil {
 		return ts;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static List<TeamSeason> retreiveTeamSeasonsByPlayerYear(Integer id, Integer year) {
+        List<TeamSeason> list=null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		Transaction tx = session.getTransaction();
+		try {
+			tx.begin();
+			org.hibernate.Query query;
+			//Not super sure on this syntax...
+			query = session.createQuery("from bo.TeamSeason where playerId = :id and year = :year");
+		    query.setParameter("id", id);
+		    query.setParameter("year", year);
+		    list = query.list();
+			tx.commit();
+		} catch (Exception e) {
+			tx.rollback();
+			e.printStackTrace();
+		} finally {
+			if (session.isOpen()) session.close();
+		}
+		return list;
+	}
+	
 	public static boolean persistPlayer(Player p) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction tx = session.getTransaction();
