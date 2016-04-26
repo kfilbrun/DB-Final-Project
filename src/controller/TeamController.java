@@ -162,7 +162,7 @@ public class TeamController extends BaseController {
         
         view.buildTable(teamYearTable);
     	
-        String[][] playerTable = new String[3][players.size() + 1];
+        String[][] playerTable = new String[players.size() + 1][3];
         
         playerTable[0][0] = "Name";
         playerTable[0][1] = "Games Played";

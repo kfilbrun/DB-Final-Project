@@ -156,7 +156,7 @@ public class PlayerController extends BaseController {
         		}
         	}
       
-        	seasonTable[i][3] = //teams
+        	seasonTable[i][3] = teamsLink;
         	seasonTable[i][4] = ps.getBattingStats().getHits().toString();
         	seasonTable[i][5] = ps.getBattingStats().getAtBats().toString();
         	seasonTable[i][6] = DOUBLE_FORMAT.format(ps.getBattingAverage());

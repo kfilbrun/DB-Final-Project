@@ -120,7 +120,7 @@ public class HibernateUtil {
 		try {
 			tx.begin();
 			org.hibernate.Query query;
-			query = session.createQuery("from bo.Team where teamid = :id ");
+			query = session.createQuery("from bo.Team where id = :id ");
 		    query.setParameter("id", id);
 		    if (query.list().size()>0) {
 		    	t = (Team) query.list().get(0);
@@ -144,7 +144,7 @@ public class HibernateUtil {
 			tx.begin();
 			org.hibernate.Query query;
 			//Not super sure on this syntax...
-			query = session.createQuery("from bo.TeamSeason where id = :id and year = :year");
+			query = session.createQuery("from bo.TeamSeason where teamid = :id and year = :year");
 		    query.setParameter("id", id);
 		    query.setParameter("year", year);
 		    if (query.list().size()>0) {
@@ -171,7 +171,7 @@ public class HibernateUtil {
 			tx.begin();
 			org.hibernate.Query query;
 			//Not super sure on this syntax...
-			query = session.createQuery("from bo.TeamSeason where playerId = :id and year = :year");
+			query = session.createQuery("from bo.TeamSeason ts join ts.teamseasonplayer p where p.playerId = :id and p.year = :year");
 		    query.setParameter("id", id);
 		    query.setParameter("year", year);
 		    list = query.list();
