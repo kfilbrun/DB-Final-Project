@@ -120,7 +120,7 @@ public class HibernateUtil {
 		try {
 			tx.begin();
 			org.hibernate.Query query;
-			query = session.createQuery("from bo.Team where id = :id ");
+			query = session.createQuery("from bo.Team where teamid = :id ");
 		    query.setParameter("id", id);
 		    if (query.list().size()>0) {
 		    	t = (Team) query.list().get(0);
