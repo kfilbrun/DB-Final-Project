@@ -1,5 +1,6 @@
 package dataaccesslayer;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -164,25 +165,31 @@ public class HibernateUtil {
 	
 	@SuppressWarnings("unchecked")
 	public static List<TeamSeason> retreiveTeamSeasonsByPlayerYear(Integer id, Integer year) {
-        List<TeamSeason> list=null;
+        List<TeamSeason> result = new LinkedList<TeamSeason>();
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction tx = session.getTransaction();
 		try {
+			List<Player> list=null;
 			tx.begin();
 			org.hibernate.Query query;
 			//Not super sure on this syntax...
-			query = session.createQuery("from bo.TeamSeason ts join ts.teamseasonplayer p where p.playerId = :id and p.year = :year");
+			query = session.createQuery("from bo.Player where playerId = :id");
 		    query.setParameter("id", id);
-		    query.setParameter("year", year);
 		    list = query.list();
 			tx.commit();
+			
+			for(TeamSeason ts : list.get(0).getTeamSeasons()){
+				if(ts.getYear() == year){
+					result.add(ts);
+				}
+			}
 		} catch (Exception e) {
 			tx.rollback();
 			e.printStackTrace();
 		} finally {
 			if (session.isOpen()) session.close();
 		}
-		return list;
+		return result;
 	}
 	
 	public static boolean persistPlayer(Player p) {
