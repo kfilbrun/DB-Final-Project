@@ -147,12 +147,14 @@ public class PlayerController extends BaseController {
         	boolean firstLink = true;
         	for(TeamSeason ts : teams){
         		String tid = ts.getTeam().getID().toString();
+        		String tname = ts.getTeam().getName();
+        		
         		if(firstLink){
-        			teamsLink = view.encodeLink(new String[]{"id"}, new String[]{tid}, tid, ACT_DETAIL, SSP_TEAM);
+        			teamsLink = view.encodeLink(new String[]{"id"}, new String[]{tid}, tname, ACT_DETAIL, SSP_TEAM);
         			firstLink = false;
         		}
         		else {
-        			teamsLink = teamsLink + ", " + view.encodeLink(new String[]{"id"}, new String[]{tid}, tid, ACT_DETAIL, SSP_TEAM);
+        			teamsLink = teamsLink + ", " + view.encodeLink(new String[]{"id"}, new String[]{tid}, tname, ACT_DETAIL, SSP_TEAM);
         		}
         	}
       
