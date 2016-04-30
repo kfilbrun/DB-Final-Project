@@ -8,6 +8,7 @@ import java.net.*;
 class WebRequestHandler implements Runnable {
 
     String SERVER_PAGE_EXT = ".ssp";
+    String STYLESHEET_EXT = ".css";
     String INDEX_PAGE = "index.htm";
     String WWW_ROOT;
     Socket connSocket;
