@@ -1,7 +1,11 @@
-table {
-	border-color: #CB594A;
+table, th, td{
+	border-collapse: collapse;
+	border: 3px solid #F45B96;
+	padding: 2px;
 }
 
 body, html {
-	background-color: #CBAB57;
+	background-color: #E4FDE1;
+	color: #114B5F;
+	font-family: Helvetica;
 }
